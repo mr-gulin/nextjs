@@ -1,0 +1,55 @@
+@use 'sass:map';
+@use 'sass:list';
+@use 'variables';
+@use '../media/variables' as media-variables;
+@use '../media/mixins' as media-mixins;
+
+@mixin typography($variant) {
+    $current: map.get(variables.$typography, $variant);
+
+    @for $i from 1 through length(media-variables.$breakpoints) {
+        $bp: list.nth(media-variables.$breakpoints, $i);
+        $bpValues: ();
+
+        @each $name, $values in $current {
+            $preparedValues: null;
+            $maxSizeValues: null;
+
+            @if $name == font-size {
+                $sizeValues: map.get($values, sizes);
+                $maxSizeValues: map.get($values, max-sizes);
+
+                $preparedValues: $sizeValues;
+            } @else {
+                $preparedValues: $values;
+            }
+
+            $value: null;
+            $maxValue: null; // max value of font in pixels
+
+            @if list.length($preparedValues) >= $i {
+                $value: list.nth($preparedValues, $i);
+            } @else {
+                $value: list.nth($preparedValues, 1);
+            }
+
+            @if $maxSizeValues {
+                @if list.length($maxSizeValues) >= $i {
+                    $maxValue: list.nth($maxSizeValues, $i);
+                } @else {
+                    $maxValue: list.nth($maxSizeValues, 1);
+                }
+            }
+
+            $entry: (#{$name}: $value);
+
+            @if $name == font-size and $value {
+                @include media-mixins.breakpoint($bp, $entry, false, $maxValue);
+            } @else {
+                $bpValues: map.merge($bpValues, $entry);
+            }
+        }
+
+        @include media-mixins.breakpoint($bp, $bpValues, true);
+    }
+}
