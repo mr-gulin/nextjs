@@ -1,4 +1,5 @@
 @use 'sass:list';
+@use 'sass:map';
 @use 'variables';
 @use 'helpers';
 
@@ -24,34 +25,55 @@
 
 @mixin breakpoint($bpName, $props, $asis: false, $maxValue: null) {
     $scale: 'calc(100vw / #{$bpName})';
-    $bpIndex: list.index(variables.$breakpoints, $bpName);
-    $bpNextIndex: $bpIndex + 1;
-    $bpLastIndex: list.length(variables.$breakpoints);
+    $bpValues: map.get(variables.$breakpoints, $bpName);
 
-    $mediaString: 'screen';
+    @if (list.length($bpValues) > 0) {
+        $mediaString: 'screen';
 
-    $mediaString: '#{$mediaString} and (min-width: #{$bpName}px)';
+        $bpFrom: list.nth($bpValues, 1);
+        $bpTo: list.nth($bpValues, 2);
 
-    @if ($bpIndex < $bpLastIndex) {
-        $bpNext: list.nth(variables.$breakpoints, $bpNextIndex);
+        @if ($bpFrom) {
+            $mediaString: '#{$mediaString} and (min-width: #{$bpFrom}px)';
+        }
 
-        $mediaString: '#{$mediaString} and (max-width: #{$bpNext - 1}px)';
-    }
+        @if ($bpTo) {
+            $mediaString: '#{$mediaString} and (max-width: #{$bpTo}px)';
+        }
 
-    @if ($bpIndex == 1) {
-        @media screen and (max-width: #{$bpName - 1}px) {
+        @media #{$mediaString} {
             @include breakpointValue($scale, $props, $asis, $maxValue);
         }
     }
+}
 
-    @media #{$mediaString} {
-        @include breakpointValue($scale, $props, $asis, $maxValue);
+@mixin media($bpName) {
+    $scale: 'calc(100vw / #{$bpName})';
+    $bpValues: map.get(variables.$breakpoints, $bpName);
+
+    @if (list.length($bpValues) > 0) {
+        $mediaString: 'screen';
+
+        $bpFrom: list.nth($bpValues, 1);
+        $bpTo: list.nth($bpValues, 2);
+
+        @if ($bpFrom) {
+            $mediaString: '#{$mediaString} and (min-width: #{$bpFrom}px)';
+        }
+
+        @if ($bpTo) {
+            $mediaString: '#{$mediaString} and (max-width: #{$bpTo}px)';
+        }
+
+        @media #{$mediaString} {
+            @content;
+        }
     }
 }
 
 @mixin sizes($props) {
     @each $bp, $bpProps in $props {
-        @if list.index(variables.$breakpoints, $bp) {
+        @if map.has-key(variables.$breakpoints, $bp) {
             @include breakpoint($bp, $bpProps);
         }
     }

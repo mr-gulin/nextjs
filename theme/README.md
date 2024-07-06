@@ -12,10 +12,26 @@ Theme is a bunch of useful scss mixins which can help speed up style writing
    ```
 2. Put your fonts files to `assets/fonts`
 3. Include fonts in `theme/fonts/_declarations.scss` using `@font-face`
-4. Put breakpoints values in `theme/media/_variables.scss` in `$breakpoints` array in **ascending** order. Remember the order and count of breakpoints, as we will use this later in typography.
+4. Put breakpoints values in `theme/media/_variables.scss` in `$breakpoints` map.
     ```scss
-    $breakpoints: (375, 760, 1440)
+    $breakpoints: (
+        375: (
+            null,
+            767,
+        ),
+        1024: (
+            768,
+            1440,
+        ),
+        1920: (
+            1441,
+            null
+        )
+    );
     ```
+   This map above means that we will scale up to 767 pixels wide window using 375 scale factor (`12px` from design will be `12 / 100vw * 375`).
+   From 768 and up to 1440 pixels wide window we will use scaleFactor 1024.
+   And from 1441 to infinity pixels wide window we will use scaleFactor 1920.
 5. Edit `$typography` map in `theme/fonts/_variables.scss`. Use the following as example:
     ```scss
     $typography: (
@@ -55,10 +71,20 @@ $colors: (
 ```
 
 ### `$breakpoints`
-This is an ordered array of numbers (ascending order required)
+This is a map located in `theme/media/_variables.scss`.<br>
+`scaleFactor`: number from design layout (will be used to scale things)<br>
+`breakpointFrom`: null or positive number<br>
+`breakpointTo`: null or positive number<br>
+
+When the window width is in between `breakpointFrom` and `breakpointTo`, we will use
+given `scaleFactor` to scale.<br>
+`N` pixels in design will be `N / 100vw * scaleFactor`
 ```scss
 // theme/media/_variables.scss
-$breakpoints: (375, 760, 1440)
+$breakpoints: (
+        scaleFactor1: ( breakpointFrom1, breakpointTo1 ),
+        scaleFactor2: ( breakpointFrom2, breakpointTo2 )
+)
 ```
 Insert the values from your design. For example, if you have Figma design for desktop and mobile, check the widths of mobile artboard and desktop artboard and insert here. Later you will use numeric values directly from design and they will be scaled: `calc(100vw / $breakpointValue * $valueFromDesign)`
 
