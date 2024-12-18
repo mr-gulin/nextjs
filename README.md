@@ -4,15 +4,15 @@ This is a starter project created with `create-next-app` and tweaked a little. T
 
 ## Stack
 
-* node: `20.12.2`
-* next: `14.2.3`
-* react: `18.3.1`
-* react-dom: `18.3.1`
-* eslint: `8.57.0`
-* prettier: `3.2.5`
-* sass: `1.75.0`
-* stylelint: `16.4.0`
-* typescript: `5.4.5`
+* node: `22.12.0`
+* next: `15.0.4`
+* react: `19.0.0`
+* react-dom: `19.0.0`
+* eslint: `9.16.0`
+* prettier: `3.4.2`
+* sass: `1.82.0`
+* stylelint: `16.11.0`
+* typescript: `5.7.2`
 
 ## Getting started
 
